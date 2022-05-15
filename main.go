@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -138,6 +139,7 @@ func processData(i int, r []string) []NdJson {
 
 // parseStruct return the json data
 func parseStruct(data []string) NdJson {
+	var ip string
 	url, _ := urlx.Parse(data[3])
 	normalized, _ := urlx.Normalize(url)
 
@@ -145,10 +147,16 @@ func parseStruct(data []string) NdJson {
 
 	note := callApiMath("http://numbersapi.com/random/math")
 	ts := toTimeStamp(data[1])
+	isValidIP := IsValidIp(data[2])
+	if isValidIP == true {
+		ip = data[2]
+	} else {
+		ip = "IP Not Valid"
+	}
 
 	return NdJson{
 		TimeStamp: ts,
-		SourceIp:  data[2],
+		SourceIp:  ip,
 		Url:       Url{Scheme: url.Scheme, Host: url.Host, Path: url.Path, Opaque: url.Opaque},
 		Size:      data[4],
 		Note:      note,
@@ -180,4 +188,11 @@ func toTimeStamp(timeString string) int64 {
 	fmt.Println("Date to Timestamp : ", timestamp)
 
 	return timestamp
+}
+
+func IsValidIp(ip string) bool {
+	if r := net.ParseIP(ip); r == nil {
+		return false
+	}
+	return true
 }
