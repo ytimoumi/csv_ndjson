@@ -1,4 +1,4 @@
-# radar_test
+# csv_ndjson
 CSV parallel processing in Golang using goroutines
 
 ## Run
